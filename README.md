@@ -10,7 +10,7 @@
 
 1. *Создайте проект и скопируйте содержимое с GitHub:*
 ```
-git clone https://github.com/StreetShiffter/firs-it-company-manage-cash.git
+https://github.com/StreetShiffter/Firs_IT_Company-Manage_cash.git
 cd firs-it-company-manage-cash
 ```
 2. *Установи Poetry (если ещё не установлен):*
