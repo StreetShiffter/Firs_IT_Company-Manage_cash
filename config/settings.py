@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "manage_cash",
     "rest_framework",
-    "rest_framework-simplejwt",
+    "rest_framework_simplejwt",
     "users",
     "django_filters",
 ]
