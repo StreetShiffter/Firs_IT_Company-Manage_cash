@@ -14,6 +14,7 @@ https://github.com/StreetShiffter/Firs_IT_Company-Manage_cash.git
 cd firs-it-company-manage-cash
 ```
 2. *Установи Poetry (если ещё не установлен):*
+
 🖥 Linux / macOS / WSL:
 
 ```curl -sSL https://install.python-poetry.org | python3 -```
