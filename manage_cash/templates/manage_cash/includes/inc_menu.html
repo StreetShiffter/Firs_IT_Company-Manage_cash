@@ -1,47 +1,71 @@
 {% load static %}
 
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
-    <div class="container">
-            <a class="navbar-brand" href="{% url 'manage_cash:home' %}">
-                <img src="{% static 'manage_cash/images/logo.png' %}" alt="Логотип" height="100">
-            </a>
-    
-    
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'manage_cash:home' %}">
+            <img src="{% static 'manage_cash/images/logo.png' %}" alt="Логотип" height="40">
+        </a>
 
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Рассылки</a>
+                    <a class="nav-link" href="#">Веб-сервис отслеживания денежных средств</a>
                 </li>
             </ul>
 
             <!-- Авторизация -->
-            <div class="d-flex">
-                    {% if user.is_authenticated %}
-                        <div class="dropdown">
-                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle"></i> {{ user.username }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'users:profile' %}"><i class="fas fa-user me-2"></i> Профиль</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <!-- Форма для выхода вместо ссылки -->
-                                <li>
-                                    <form method="post" action="{% url 'users:logout' %}" class="m-0 p-0">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-sign-out-alt me-2"></i> Выйти
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    {% else %}
-                        <a href="#" class="btn btn-outline-light btn-sm me-2">Вход</a>
-                        <a href="#" class="btn btn-light btn-sm">Регистрация</a>
-                    {% endif %}
-                </div>
+            <div class="d-flex align-items-center">
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> {{ user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'users:profile' %}"><i class="fas fa-user me-2"></i> Профиль</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'users:logout' %}" class="m-0 p-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Выйти
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="#" class="btn btn-outline-light btn-sm me-2">Вход</a>
+                    <a href="#" class="btn btn-light btn-sm">Регистрация</a>
+                {% endif %}
             </div>
         </div>
     </div>
 </nav>
+
+<!-- Подключаем CSS для фоновой картинки -->
+<style>
+.navbar {
+    background-image: url("{% static 'manage_cash/images/navbar-bg.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 70px;
+}
+
+/* Затемнение для лучшей читаемости текста */
+.navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.navbar > * {
+    position: relative;
+    z-index: 2;
+}
+</style>
