@@ -142,19 +142,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"  # Указываем кастомную модель для уинтификации
 #
-# EMAIL_BACKEND = os.getenv('EMAIL_BACKEND') #Настройки почты
-# EMAIL_HOST = os.getenv('EMAIL_HOST')
-# EMAIL_PORT = os.getenv('EMAIL_PORT')
-# EMAIL_USE_TLS = True if os.getenv('EMAIL_USE_TLS') == 'True' else False
-# EMAIL_USE_SSL = True if os.getenv('EMAIL_USE_SSL') == 'True' else False
-# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-#
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-#
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND') #Настройки почты
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = True if os.getenv('EMAIL_USE_TLS') == 'True' else False
+EMAIL_USE_SSL = True if os.getenv('EMAIL_USE_SSL') == 'True' else False
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
-#
-# LOGIN_REDIRECT_URL = 'users:profile'# Редирект после логирования(имя приложения и имя в url)
-# LOGOUT_REDIRECT_URL = 'mailservices:home'# Редирект после выхода(имя приложения и имя в url )
-# LOGIN_URL = 'users:register'# Редирект на страницу регистрации, если вьюшка защищена миксином LoginRequiredMixin
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
+LOGIN_REDIRECT_URL = 'users:profile'# Редирект после логирования(имя приложения и имя в url)
+LOGOUT_REDIRECT_URL = 'mailservices:home'# Редирект после выхода(имя приложения и имя в url )
+LOGIN_URL = 'users:register'# Редирект на страницу регистрации, если вьюшка защищена миксином LoginRequiredMixin
 

@@ -35,7 +35,7 @@
                     </div>
                 {% else %}
                     <a href="#" class="btn btn-outline-light btn-sm me-2">Вход</a>
-                    <a href="#" class="btn btn-light btn-sm">Регистрация</a>
+                    <a href="{% url 'users:register' %}" class="btn btn-light btn-sm">Регистрация</a>
                 {% endif %}
             </div>
         </div>
