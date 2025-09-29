@@ -83,20 +83,28 @@ class UserProfileView(View):
     """Вьюшка кабинета пользователя"""
 
     def get(self, request):
-        user = request.user
-        attempts = Transaction.objects.filter(mailing__owner=user)
+        user = self.request.user
+        queryset = Transaction.objects.filter(owner=user)
+
+        # status_id = self.request.GET.get('status')
+        # status = queryset.filter(status_id=status_id)
+        # type_id = self.request.GET.get('type')
+        # type = queryset.filter(status_id=type_id)
+        # category_id = self.request.GET.get('category')
+        # category = queryset.filter(status_id=category_id)
+        # subcategory_id = self.request.GET.get('subcategory')
+        # subcategory = queryset.filter(status_id=subcategory_id)
+
 
         context = {
             "user_profile": user,
-            "total_attempts": attempts.count(),
-            "successful_attempts": attempts.filter(status="success").count(),
-            "failed_attempts": attempts.filter(status="failed").count(),
+            "total_attempts": queryset.count(),
         }
         return render(request, "users/profile.html", context)
 
 
 class UserProfileEditView(LoginRequiredMixin, UpdateView):
-    """Вьюшка редактирования кабинета пользователя(LoginRequiredMixi защищает от неавторизованности)"""
+    """Вьюшка редактирования кабинета пользователя(LoginRequiredMixin защищает от неавторизованности)"""
 
     model = User
     form_class = UserProfileForm

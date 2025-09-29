@@ -1,8 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import EmailValidator, MaxLengthValidator, FileExtensionValidator
+from django.core.validators import EmailValidator, MaxLengthValidator, FileExtensionValidator, RegexValidator
 from django.db import models
-
 from users.validators import phone_validator
 
 
@@ -43,7 +42,7 @@ class User(AbstractUser):
                               null=True,
                               blank=True,
                               validators = [FileExtensionValidator(["png","jpg", "jpeg"],
-                                                                  "Только изображения формата png, jpg, jpeg")]),
+                                                                  "Только изображения формата png, jpg, jpeg")])
     token = models.CharField(max_length=120, verbose_name='Токен', null=True, blank=True)
 
     USERNAME_FIELD = "email"

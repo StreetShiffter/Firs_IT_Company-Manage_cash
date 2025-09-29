@@ -6,6 +6,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 from users.models import User  # Убедись, что модель импортирована
+from users.validators import phone_validator
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -13,7 +14,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username', 'email', 'phone',]
+        fields = ['username', 'email', 'phone', 'image']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,8 +36,11 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
-        if phone and not phone.isdigit():
-            raise forms.ValidationError('Номер телефона должен содержать только цифры.')
+        if phone:
+            try:
+                phone_validator(phone)  # вызываем валидатор
+            except ValidationError:
+                raise forms.ValidationError("Телефон должен быть в формате: +79991234567 или 89991234567")
         return phone
 
     def clean_email(self):
@@ -60,7 +64,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone', ]
+        fields = ['username', 'email', 'phone', 'image' ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -79,8 +83,11 @@ class UserProfileForm(forms.ModelForm):
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
-        if phone and not phone.isdigit():
-            raise forms.ValidationError('Номер телефона должен содержать только цифры.')
+        if phone:
+            try:
+                phone_validator(phone)  # вызываем валидатор
+            except ValidationError:
+                raise forms.ValidationError("Телефон должен быть в формате: +79991234567 или 89991234567")
         return phone
 
     def clean_email(self):

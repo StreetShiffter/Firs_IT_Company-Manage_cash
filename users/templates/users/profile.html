@@ -9,12 +9,23 @@
 <div class="card mb-4">
     <div class="card-body text-center">
         <h3>Профиль пользователя {{ user.username }}</h3>
+        <div class="mb-3">
+            {% if user.image %}
+                <img src="{{ user.image.url }}"
+                     alt="Аватар"
+                     class="rounded-circle"
+                     style="width: 300px; height: 300px; object-fit: cover; object-position: center;">
+            {% else %}
+                <img src="/media/user_avatars/icon.png"
+                     alt="Нет аватара"
+                     class="rounded-circle"
+                     style="width: 200px; height: 200px; object-fit: cover; object-position: center;">
+            {% endif %}
         <p><strong>Почта:</strong> {{ user.email }}</p>
         <p><strong>Никнейм:</strong> {{ user.username }}</p>
         <p><strong>Номер телефона:</strong> {{ user.phone }}</p>
 
         <a href="{% url 'users:profile_edit' %}" class="btn btn-warning">Редактировать</a>
-        <a href="{% url 'mailservices:attempt_list' %}" class="btn btn-info">История рассылок</a>
     </div>
 </div>
 
