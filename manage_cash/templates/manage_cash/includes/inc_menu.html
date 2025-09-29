@@ -8,9 +8,10 @@
 
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
                     <a class="nav-link" href="#">Веб-сервис отслеживания денежных средств</a>
-                </li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'manage_cash:create_transaction' %}" class="btn btn-outline-light btn-sm me-2">Создать новую запись</a>
+                    {% endif %}
             </ul>
 
             <!-- Авторизация -->

@@ -2,24 +2,116 @@
 
 {% block title %}Форма транзакции{% endblock %}
 
-
 {% block content %}
     <div class="container-fluid p-4">
-            <h2>
-                {% if form.instance.pk %}
-                    Редактировать запись: {{ form.instance.owner|default:"Без названия" }}
-                {% else %}
-                    Создать запись
-                {% endif %}</h2>
-            <div class="row">
-                <div class="col-md-3 mb-4">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-                        {{ form.as_p }}  <!-- Отображение полей формы -->
-                        <button type="submit" class="btn btn-danger">Сохранить</button>
-                    </form>
-                </div>
+        <h2>
+            {% if form.instance.pk %}
+                Редактировать запись: {{ form.instance.owner|default:"Без названия" }}
+            {% else %}
+                Создать запись
+            {% endif %}
+        </h2>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.name == "status" %}
+                                <small>
+                                    <a href="{% url 'manage_cash:add_status' %}" target="_blank">➕ Не нашли нужный статус? Добавить</a>
+                                </small>
+                            {% elif field.name == "type" %}
+                                <small>
+                                    <a href="{% url 'manage_cash:add_type' %}" target="_blank">➕ Не нашли нужный тип транзакции? Добавить</a>
+                                </small>
+                            {% elif field.name == "category" %}
+                                <small>
+                                    <a href="{% url 'manage_cash:add_category' %}" target="_blank">➕ Не нашли нужную категорию? Добавить</a>
+                                </small>
+                            {% elif field.name == "subcategory" %}
+                                <small>
+                                    <a href="{% url 'manage_cash:add_subcategory' %}" target="_blank">➕ Не нашли нужную подкатегорию? Добавить</a>
+                                </small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-danger">Сохранить</button>
+                </form>
             </div>
         </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const typeSelect = document.getElementById('id_type');
+            const categorySelect = document.getElementById('id_category');
+            const subcategorySelect = document.getElementById('id_subcategory');
+
+            // Функция для загрузки категорий
+            function loadCategories(typeId) {
+                if (typeId) {
+                    fetch(`/ajax/categories/?type_id=${typeId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Очищаем список
+                            categorySelect.innerHTML = '<option value="">---------</option>';
+                            subcategorySelect.innerHTML = '<option value="">---------</option>';
+
+                            // Заполняем категориями для выбранного типа
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.name;
+                                categorySelect.appendChild(option);
+                            });
+                        });
+                } else {
+                    // Если тип не выбран, очищаем списки
+                    categorySelect.innerHTML = '<option value="">---------</option>';
+                    subcategorySelect.innerHTML = '<option value="">---------</option>';
+                }
+            }
+
+            // Функция для загрузки подкатегорий
+            function loadSubcategories(categoryId) {
+                if (categoryId) {
+                    fetch(`/ajax/subcategories/?category_id=${categoryId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Очищаем список
+                            subcategorySelect.innerHTML = '<option value="">---------</option>';
+
+                            // Заполняем подкатегориями для выбранной категории
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.name;
+                                subcategorySelect.appendChild(option);
+                            });
+                        });
+                } else {
+                    // Если категория не выбрана, очищаем список
+                    subcategorySelect.innerHTML = '<option value="">---------</option>';
+                }
+            }
+
+            // При изменении типа
+            typeSelect.addEventListener('change', function () {
+                const typeId = this.value;
+                loadCategories(typeId);
+            });
+
+            // При изменении категории
+            categorySelect.addEventListener('change', function () {
+                const categoryId = this.value;
+                loadSubcategories(categoryId);
+            });
+
+        });
+    </script>
 {% endblock %}
