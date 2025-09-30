@@ -2,7 +2,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 from manage_cash.models import Transaction, StatusTransaction, TypeTransaction, Category, Subcategory
 
-
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
@@ -31,58 +30,20 @@ class TransactionForm(forms.ModelForm):
             'class': 'form-control',
             'placeholder': 'Тип транзакции'})
 
-        # Фильтруем категории по типу
-        if self.type_id:
-            self.fields['category'].queryset = Category.objects.filter(transaction_type_id=self.type_id)
-        else:
-            # Если тип не выбран, оставляем пустой список
-            self.fields['category'].queryset = Category.objects.none()
-
         self.fields['category'].widget.attrs.update({
             'class': 'form-control',
-            'placeholder': 'Категория транзакции (зависит от типа транзакции)'})
-
-        # Фильтруем подкатегории по категории
-        if self.category_id:
-            self.fields['subcategory'].queryset = Subcategory.objects.filter(category_id=self.category_id)
-        else:
-            # Если категория не выбрана, оставляем пустой список
-            self.fields['subcategory'].queryset = Subcategory.objects.none()
+            'placeholder': 'Категория транзакции'})
 
         self.fields['subcategory'].widget.attrs.update({
             'class': 'form-control',
-            'placeholder': 'Подкатегория транзакции (зависит от категории транзакции)'})
+            'placeholder': 'Подкатегория транзакции'})
 
-        self.fields['amount'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Сумма транзакции'})
-
-        self.fields['comment'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Комментарий(не обязательно)'})
-
-        self.fields['date'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Дата (оставить пустым для авто заполнения на момент создания)'})
-        self.fields['date'].required = False
-
-
-    def clean_amount(self):
-        """Валидатор корректной суммы"""
-        amount = self.cleaned_data.get('amount')
-        if amount < 0:
-            raise ValidationError('Сумма не может быть отрицательной!')
-        elif amount == 0:
-            raise ValidationError('Сумма не может нулевой!')
-        return amount
-
-    # Опционально: Добавим валидацию связей
     def clean_category(self):
         category = self.cleaned_data.get('category')
-        type_cat = self.cleaned_data.get('type')
+        type_ = self.cleaned_data.get('type')
 
-        if category and type_cat:
-            if category.transaction_type != type_cat:
+        if category and type_:
+            if category.transaction_type != type_:
                 raise ValidationError('Выбранная категория не соответствует выбранному типу транзакции.')
 
         return category
@@ -96,6 +57,16 @@ class TransactionForm(forms.ModelForm):
                 raise ValidationError('Выбранная подкатегория не соответствует выбранной категории.')
 
         return subcategory
+
+    def clean_amount(self):
+        """Валидатор корректной суммы"""
+        amount = self.cleaned_data.get('amount')
+        if amount < 0:
+            raise ValidationError('Сумма не может быть отрицательной!')
+        elif amount == 0:
+            raise ValidationError('Сумма не может нулевой!')
+        return amount
+
 
 #Создание справочников
 class StatusForm(forms.ModelForm):

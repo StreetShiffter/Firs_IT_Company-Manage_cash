@@ -13,8 +13,22 @@
         </h2>
         <div class="row">
             <div class="col-md-3 mb-4">
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" id="transactionForm" enctype="multipart/form-data">
                     {% csrf_token %}
+
+                    <!-- Выводим ошибки формы -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Ошибки формы:</strong>
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ field.label }}: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
 
                     {% for field in form %}
                         <div class="mb-3">
@@ -22,19 +36,27 @@
                             {{ field }}
                             {% if field.name == "status" %}
                                 <small>
-                                    <a href="{% url 'manage_cash:add_status' %}" target="_blank">➕ Не нашли нужный статус? Добавить</a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#addStatusModal">
+                                        ➕ Не нашли нужный статус? Добавить
+                                    </a>
                                 </small>
                             {% elif field.name == "type" %}
                                 <small>
-                                    <a href="{% url 'manage_cash:add_type' %}" target="_blank">➕ Не нашли нужный тип транзакции? Добавить</a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#addTypeModal">
+                                        ➕ Не нашли нужный тип транзакции? Добавить
+                                    </a>
                                 </small>
                             {% elif field.name == "category" %}
                                 <small>
-                                    <a href="{% url 'manage_cash:add_category' %}" target="_blank">➕ Не нашли нужную категорию? Добавить</a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                                        ➕ Не нашли нужную категорию? Добавить
+                                    </a>
                                 </small>
                             {% elif field.name == "subcategory" %}
                                 <small>
-                                    <a href="{% url 'manage_cash:add_subcategory' %}" target="_blank">➕ Не нашли нужную подкатегорию? Добавить</a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">
+                                        ➕ Не нашли нужную подкатегорию? Добавить
+                                    </a>
                                 </small>
                             {% endif %}
                         </div>
@@ -45,73 +67,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const typeSelect = document.getElementById('id_type');
-            const categorySelect = document.getElementById('id_category');
-            const subcategorySelect = document.getElementById('id_subcategory');
-
-            // Функция для загрузки категорий
-            function loadCategories(typeId) {
-                if (typeId) {
-                    fetch(`/ajax/categories/?type_id=${typeId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // Очищаем список
-                            categorySelect.innerHTML = '<option value="">---------</option>';
-                            subcategorySelect.innerHTML = '<option value="">---------</option>';
-
-                            // Заполняем категориями для выбранного типа
-                            data.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.id;
-                                option.textContent = item.name;
-                                categorySelect.appendChild(option);
-                            });
-                        });
-                } else {
-                    // Если тип не выбран, очищаем списки
-                    categorySelect.innerHTML = '<option value="">---------</option>';
-                    subcategorySelect.innerHTML = '<option value="">---------</option>';
-                }
-            }
-
-            // Функция для загрузки подкатегорий
-            function loadSubcategories(categoryId) {
-                if (categoryId) {
-                    fetch(`/ajax/subcategories/?category_id=${categoryId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // Очищаем список
-                            subcategorySelect.innerHTML = '<option value="">---------</option>';
-
-                            // Заполняем подкатегориями для выбранной категории
-                            data.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.id;
-                                option.textContent = item.name;
-                                subcategorySelect.appendChild(option);
-                            });
-                        });
-                } else {
-                    // Если категория не выбрана, очищаем список
-                    subcategorySelect.innerHTML = '<option value="">---------</option>';
-                }
-            }
-
-            // При изменении типа
-            typeSelect.addEventListener('change', function () {
-                const typeId = this.value;
-                loadCategories(typeId);
-            });
-
-            // При изменении категории
-            categorySelect.addEventListener('change', function () {
-                const categoryId = this.value;
-                loadSubcategories(categoryId);
-            });
-
-        });
-    </script>
 {% endblock %}

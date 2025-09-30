@@ -100,17 +100,17 @@ class Transaction(models.Model):
         """Метод проверки условий"""
         super().clean()
         # Связь категории и типа
-        if self.category:
+        if self.category_id:  # ✅ Проверяем ID, а не объект
             if not self.type:
                 raise ValidationError({'type': 'Тип транзакции обязателен при выборе категории.'})
-            if self.category.transaction_type != self.type:
+            if self.category.transaction_type != self.type:  # ✅ Только если category существует
                 raise ValidationError({'category': 'Категория не соответствует типу транзакции.'})
 
         # Связь категории и подкатегории
-        if self.subcategory:
-            if not self.category:
+        if self.subcategory_id:  # ✅ Проверяем ID, а не объект
+            if not self.category_id:  # ✅ Проверяем ID, а не объект
                 raise ValidationError({'subcategory': 'Нельзя выбрать подкатегорию без категории.'})
-            if self.subcategory.category != self.category:
+            if self.subcategory.category != self.category:  # ✅ Только если subcategory и category существуют
                 raise ValidationError({'subcategory': 'Подкатегория не соответствует категории.'})
 
     def save(self, *args, **kwargs):

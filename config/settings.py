@@ -155,6 +155,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 LOGIN_REDIRECT_URL = 'users:profile'# Редирект после логирования(имя приложения и имя в url)
-LOGOUT_REDIRECT_URL = 'mailservices:home'# Редирект после выхода(имя приложения и имя в url )
+LOGOUT_REDIRECT_URL = 'manage_cash:home'# Редирект после выхода(имя приложения и имя в url )
 LOGIN_URL = 'users:register'# Редирект на страницу регистрации, если вьюшка защищена миксином LoginRequiredMixin
 

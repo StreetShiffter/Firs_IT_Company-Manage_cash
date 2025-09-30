@@ -46,7 +46,7 @@ class User(AbstractUser):
     token = models.CharField(max_length=120, verbose_name='Токен', null=True, blank=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["username"]
 
     # Подключаем наш кастомный менеджер → теперь Django не строит объект из модели, а берет "правило"
     objects = UserManager()
