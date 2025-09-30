@@ -36,7 +36,7 @@ class Category(models.Model):
         verbose_name='Тип транзакции'
     )
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.name}, {self.transaction_type}'
 
     class Meta:
         verbose_name = 'Категория'
@@ -100,17 +100,17 @@ class Transaction(models.Model):
         """Метод проверки условий"""
         super().clean()
         # Связь категории и типа
-        if self.category_id:  # ✅ Проверяем ID, а не объект
+        if self.category_id:  #Проверяем ID
             if not self.type:
                 raise ValidationError({'type': 'Тип транзакции обязателен при выборе категории.'})
-            if self.category.transaction_type != self.type:  # ✅ Только если category существует
+            if self.category.transaction_type != self.type:  # Только если category существует
                 raise ValidationError({'category': 'Категория не соответствует типу транзакции.'})
 
         # Связь категории и подкатегории
-        if self.subcategory_id:  # ✅ Проверяем ID, а не объект
-            if not self.category_id:  # ✅ Проверяем ID, а не объект
+        if self.subcategory_id:
+            if not self.category_id:
                 raise ValidationError({'subcategory': 'Нельзя выбрать подкатегорию без категории.'})
-            if self.subcategory.category != self.category:  # ✅ Только если subcategory и category существуют
+            if self.subcategory.category != self.category:
                 raise ValidationError({'subcategory': 'Подкатегория не соответствует категории.'})
 
     def save(self, *args, **kwargs):

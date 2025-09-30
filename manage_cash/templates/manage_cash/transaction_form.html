@@ -67,4 +67,285 @@
             </div>
         </div>
     </div>
+
+    <!-- Модальное окно для добавления Статуса -->
+    <div class="modal fade" id="addStatusModal" tabindex="-1" aria-labelledby="addStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStatusModalLabel">Добавить статус</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStatusForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_status_name" class="form-label">Название</label>
+                            <input type="text" class="form-control" id="id_status_name" name="name" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="saveStatusBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления Типа -->
+    <div class="modal fade" id="addTypeModal" tabindex="-1" aria-labelledby="addTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTypeModalLabel">Добавить тип</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTypeForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_type_name" class="form-label">Название</label>
+                            <input type="text" class="form-control" id="id_type_name" name="name" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="saveTypeBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления Категории -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Добавить категорию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCategoryForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_category_name" class="form-label">Название</label>
+                            <input type="text" class="form-control" id="id_category_name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_category_transaction_type" class="form-label">Тип транзакции</label>
+                            <select class="form-control" id="id_category_transaction_type" name="transaction_type" required>
+                                <!-- Заполняется через JavaScript -->
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления Подкатегории -->
+    <div class="modal fade" id="addSubcategoryModal" tabindex="-1" aria-labelledby="addSubcategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addSubcategoryModalLabel">Добавить подкатегорию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSubcategoryForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_subcategory_name" class="form-label">Название</label>
+                            <input type="text" class="form-control" id="id_subcategory_name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_subcategory_category" class="form-label">Категория</label>
+                            <select class="form-control" id="id_subcategory_category" name="category" required>
+                                <!-- Заполняется через JavaScript -->
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="saveSubcategoryBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Функция для загрузки типов транзакции ---
+            function loadTransactionTypes(selectElementId) {
+                fetch('{% url "manage_cash:get_types_ajax" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectElement = document.getElementById(selectElementId);
+                        selectElement.innerHTML = '<option value="">---------</option>';
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+                            selectElement.appendChild(option);
+                        });
+                    });
+            }
+
+            // --- Функция для загрузки категорий ---
+            function loadCategoriesByType(typeId, targetSelectId) {
+                if (typeId) {
+                    // ❗ Измени путь: было `/manage-cash/ajax/categories/?type_id=${typeId}`, стало `/ajax/categories/?type_id=${typeId}`
+                    fetch(`/ajax/categories/?type_id=${typeId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const selectElement = document.getElementById(targetSelectId);
+                            selectElement.innerHTML = '<option value="">---------</option>';
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.name;
+                                selectElement.appendChild(option);
+                            });
+                        });
+                } else {
+                    const selectElement = document.getElementById(targetSelectId);
+                    selectElement.innerHTML = '<option value="">---------</option>';
+                }
+            }
+            
+            // --- Функция для загрузки подкатегорий по категории ---
+            function loadSubcategoriesByCategory(categoryId, targetSelectId) {
+                if (categoryId) {
+                    // ❗ Измени путь: было `/manage-cash/ajax/subcategories/?category_id=${categoryId}`, стало `/ajax/subcategories/?category_id=${categoryId}`
+                    fetch(`/ajax/subcategories/?category_id=${categoryId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const selectElement = document.getElementById(targetSelectId);
+                            selectElement.innerHTML = '<option value="">---------</option>';
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.name;
+                                selectElement.appendChild(option);
+                            });
+                        });
+                } else {
+                    const selectElement = document.getElementById(targetSelectId);
+                    selectElement.innerHTML = '<option value="">---------</option>';
+                }
+            }
+            // --- Обработчик изменения типа ---
+            document.getElementById('id_type').addEventListener('change', function () {
+                const typeId = this.value;
+                loadCategoriesByType(typeId, 'id_category');
+                // Очищаем подкатегорию, если тип изменился
+                document.getElementById('id_subcategory').innerHTML = '<option value="">---------</option>';
+            });
+            
+            // --- Обработчик изменения категории ---
+            document.getElementById('id_category').addEventListener('change', function () {
+                const categoryId = this.value;
+                loadSubcategoriesByCategory(categoryId, 'id_subcategory');
+            });
+
+            // --- Загрузка типов при открытии модального окна категории ---
+            document.getElementById('addCategoryModal').addEventListener('show.bs.modal', function () {
+                loadTransactionTypes('id_category_transaction_type');
+            });
+
+            // --- Загрузка категорий при открытии модального окна подкатегории ---
+            document.getElementById('addSubcategoryModal').addEventListener('show.bs.modal', function () {
+                loadCategories('id_subcategory_category');
+            });
+
+            // --- Функция для добавления и обновления select ---
+            function addAndSelectNewItem(formId, addUrl, targetSelectId, nameField, typeField = null, typeValue = null) {
+                const formData = new FormData(document.getElementById(formId));
+                fetch(addUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Добавляем новый элемент в целевой select
+                        const targetSelect = document.getElementById(targetSelectId);
+                        const newOption = document.createElement('option');
+                        newOption.value = data.item.id;
+                        newOption.textContent = data.item.name;
+                        newOption.selected = true; // Выбираем его
+                        targetSelect.appendChild(newOption);
+            
+                        // Закрываем модальное окно
+                        const modalElement = document.querySelector(`#${formId.replace('Form', 'Modal')}`);
+                        const modal = bootstrap.Modal.getInstance(modalElement);
+                        if (modal) {
+                            modal.hide();
+                        }
+            
+                        // Очищаем форму
+                        document.getElementById(formId).reset();
+                    } else {
+                        // ❗ Правильно обрабатываем JSON-ошибки
+                        let errorMessage = 'Неизвестная ошибка';
+                        try {
+                            // data.error — это строка, содержащая JSON
+                            const errorJson = JSON.parse(data.error);
+                            
+                            // Извлекаем сообщения
+                            if (errorJson.name) {
+                                errorMessage = errorJson.name.map(err => err.message).join(', ');
+                            } else {
+                                // Если поле name нет, выводим всё как есть
+                                errorMessage = data.error;
+                            }
+                        } catch (e) {
+                            // Если не удалось распарсить, выводим как есть
+                            errorMessage = data.error;
+                        }
+                        alert('Ошибка: ' + errorMessage);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при сохранении:', error);
+                    alert('Произошла ошибка при сохранении.');
+                });
+            }
+
+            // --- Обработчики для кнопок сохранения ---
+
+            // Сохранить Статус
+            document.getElementById('saveStatusBtn').addEventListener('click', function () {
+                addAndSelectNewItem('addStatusForm', '{% url "manage_cash:add_status_ajax" %}', 'id_status', 'name');
+            });
+
+            // Сохранить Тип
+            document.getElementById('saveTypeBtn').addEventListener('click', function () {
+                addAndSelectNewItem('addTypeForm', '{% url "manage_cash:add_type_ajax" %}', 'id_type', 'name');
+            });
+
+            // Сохранить Категорию
+            document.getElementById('saveCategoryBtn').addEventListener('click', function () {
+                addAndSelectNewItem('addCategoryForm', '{% url "manage_cash:add_category_ajax" %}', 'id_category', 'name');
+            });
+
+            // Сохранить Подкатегорию
+            document.getElementById('saveSubcategoryBtn').addEventListener('click', function () {
+                addAndSelectNewItem('addSubcategoryForm', '{% url "manage_cash:add_subcategory_ajax" %}', 'id_subcategory', 'name');
+            });
+
+        });
+    </script>
 {% endblock %}
