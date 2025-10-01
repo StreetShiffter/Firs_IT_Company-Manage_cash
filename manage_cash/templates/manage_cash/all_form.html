@@ -1,0 +1,135 @@
+{% extends "manage_cash/base.html" %}
+
+{% block title %}Управление справочниками{% endblock %}
+
+{% block content %}
+    <div class="container-fluid p-4">
+        <h2>Управление справочниками</h2>
+
+        <div class="row">
+            <!-- Форма добавления статуса -->
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Добавить статус</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="addStatusForm">
+                            {% csrf_token %}
+                            {{ status_form.as_p }}
+                            <button type="button" class="btn btn-primary" id="saveStatusBtn">Сохранить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма добавления типа -->
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Добавить тип</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="addTypeForm">
+                            {% csrf_token %}
+                            {{ type_form.as_p }}
+                            <button type="button" class="btn btn-primary" id="saveTypeBtn">Сохранить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма добавления категории -->
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Добавить категорию</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="addCategoryForm">
+                            {% csrf_token %}
+                            {{ category_form.as_p }}
+                            <button type="button" class="btn btn-primary" id="saveCategoryBtn">Сохранить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма добавления подкатегории -->
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Добавить подкатегорию</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="addSubcategoryForm">
+                            {% csrf_token %}
+                            {{ subcategory_form.as_p }}
+                            <button type="button" class="btn btn-primary" id="saveSubcategoryBtn">Сохранить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // --- Функция для добавления справочника ---
+        function addReference(formId, addUrl) {
+            const formData = new FormData(document.getElementById(formId));
+            fetch(addUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Справочник успешно добавлен!');
+                    // Очищаем форму
+                    document.getElementById(formId).reset();
+                } else {
+                    let errorMessage = 'Неизвестная ошибка';
+                    try {
+                        const errorJson = JSON.parse(data.error);
+                        if (errorJson.name) {
+                            errorMessage = errorJson.name.map(err => err.message).join(', ');
+                        } else {
+                            errorMessage = data.error;
+                        }
+                    } catch (e) {
+                        errorMessage = data.error;
+                    }
+                    alert('Ошибка: ' + errorMessage);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при сохранении:', error);
+                alert('Произошла ошибка при сохранении.');
+            });
+        }
+
+        // --- Обработчики для кнопок сохранения ---
+
+        document.getElementById('saveStatusBtn').addEventListener('click', function () {
+            addReference('addStatusForm', '{% url "manage_cash:add_status_ajax" %}');
+        });
+
+        document.getElementById('saveTypeBtn').addEventListener('click', function () {
+            addReference('addTypeForm', '{% url "manage_cash:add_type_ajax" %}');
+        });
+
+        document.getElementById('saveCategoryBtn').addEventListener('click', function () {
+            addReference('addCategoryForm', '{% url "manage_cash:add_category_ajax" %}');
+        });
+
+        document.getElementById('saveSubcategoryBtn').addEventListener('click', function () {
+            addReference('addSubcategoryForm', '{% url "manage_cash:add_subcategory_ajax" %}');
+        });
+    </script>
+{% endblock %}

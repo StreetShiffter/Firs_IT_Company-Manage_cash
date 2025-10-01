@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from manage_cash.models import Transaction, StatusTransaction, TypeTransaction, Category, Subcategory
 
 class TransactionForm(forms.ModelForm):
+    """Форма создания транзакции"""
     class Meta:
         model = Transaction
         fields = ['status', 'type', 'category', 'subcategory', 'amount', 'comment', 'date']
@@ -119,7 +120,7 @@ class CategoryForm(forms.ModelForm):
     """Форма категории транзакции"""
     class Meta:
         model = Category
-        fields = ['name', 'transaction_type']  # ✅ Включаем 'transaction_type'
+        fields = ['name', 'transaction_type']
 
     def clean_name(self):
         """Валидатор проверяющий наличие похожей категории в рамках типа транзакции"""

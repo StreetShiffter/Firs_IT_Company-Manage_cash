@@ -8,12 +8,15 @@ from .views import (TransactionListView,
                     CreateSubcategoryView, get_types_ajax, add_status_ajax, add_type_ajax,
                     add_category_ajax, add_subcategory_ajax, get_categories_by_type, get_subcategories_by_category, )
 
+from .views.head_directory import CreateAllDirectoryView
+
 app_name = ManageCashConfig.name
 
 
 urlpatterns = [
     path("", TransactionListView.as_view(), name="home"),
     path("create/", CreateTransactionView.as_view(), name="create_transaction"),
+    path("directory/", CreateAllDirectoryView.as_view(), name="create_directory"),
     ############################################################################
     # Работа со справочниками - создание
     path("add_status/", CreateStatusView.as_view(), name="add_status"),

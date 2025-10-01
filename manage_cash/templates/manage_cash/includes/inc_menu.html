@@ -11,6 +11,7 @@
                     <a class="nav-link" href="#">Веб-сервис отслеживания денежных средств</a>
                     {% if user.is_authenticated %}
                         <a href="{% url 'manage_cash:create_transaction' %}" class="btn btn-outline-light btn-sm me-2">Создать новую запись</a>
+                        <a href="{% url 'manage_cash:create_directory' %}" class="btn btn-outline-light btn-sm me-2">Работа со справочниками</a>
                     {% endif %}
             </ul>
 
