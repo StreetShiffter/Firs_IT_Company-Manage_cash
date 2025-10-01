@@ -32,4 +32,5 @@ urlpatterns = [
     path("ajax/add_category/", add_category_ajax, name="add_category_ajax"),
     path("ajax/add_subcategory/", add_subcategory_ajax, name="add_subcategory_ajax"),
 
+
 ]

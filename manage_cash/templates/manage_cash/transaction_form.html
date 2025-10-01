@@ -202,47 +202,63 @@
 
             // --- Функция для загрузки категорий ---
             function loadCategoriesByType(typeId, targetSelectId) {
-                if (typeId) {
-                    // ❗ Измени путь: было `/manage-cash/ajax/categories/?type_id=${typeId}`, стало `/ajax/categories/?type_id=${typeId}`
-                    fetch(`/ajax/categories/?type_id=${typeId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const selectElement = document.getElementById(targetSelectId);
-                            selectElement.innerHTML = '<option value="">---------</option>';
-                            data.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.id;
-                                option.textContent = item.name;
-                                selectElement.appendChild(option);
-                            });
-                        });
-                } else {
-                    const selectElement = document.getElementById(targetSelectId);
-                    selectElement.innerHTML = '<option value="">---------</option>';
-                }
-            }
-            
-            // --- Функция для загрузки подкатегорий по категории ---
-            function loadSubcategoriesByCategory(categoryId, targetSelectId) {
-                if (categoryId) {
-                    // ❗ Измени путь: было `/manage-cash/ajax/subcategories/?category_id=${categoryId}`, стало `/ajax/subcategories/?category_id=${categoryId}`
-                    fetch(`/ajax/subcategories/?category_id=${categoryId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const selectElement = document.getElementById(targetSelectId);
-                            selectElement.innerHTML = '<option value="">---------</option>';
-                            data.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.id;
-                                option.textContent = item.name;
-                                selectElement.appendChild(option);
-                            });
-                        });
-                } else {
-                    const selectElement = document.getElementById(targetSelectId);
-                    selectElement.innerHTML = '<option value="">---------</option>';
-                }
-            }
+    if (typeId) {
+        // ❗ Измени путь: было `/manage-cash/ajax/categories/?type_id=${typeId}`, стало `/ajax/categories/?type_id=${typeId}`
+        fetch(`/ajax/categories/?type_id=${typeId}`)
+            .then(response => response.json())
+            .then(data => {
+                const selectElement = document.getElementById(targetSelectId);
+                selectElement.innerHTML = '<option value="">---------</option>';
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.name;
+                    selectElement.appendChild(option);
+                });
+            });
+    } else {
+        const selectElement = document.getElementById(targetSelectId);
+        selectElement.innerHTML = '<option value="">---------</option>';
+    }
+}
+
+// --- Функция для загрузки подкатегорий по категории ---
+function loadSubcategoriesByCategory(categoryId, targetSelectId) {
+    if (categoryId) {
+        // ❗ Измени путь: было `/manage-cash/ajax/subcategories/?category_id=${categoryId}`, стало `/ajax/subcategories/?category_id=${categoryId}`
+        fetch(`/ajax/subcategories/?category_id=${categoryId}`)
+            .then(response => response.json())
+            .then(data => {
+                const selectElement = document.getElementById(targetSelectId);
+                selectElement.innerHTML = '<option value="">---------</option>';
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.name;
+                    selectElement.appendChild(option);
+                });
+            });
+    } else {
+        const selectElement = document.getElementById(targetSelectId);
+        selectElement.innerHTML = '<option value="">---------</option>';
+    }
+}
+
+        document.getElementById('addSubcategoryModal').addEventListener('show.bs.modal', function () {
+    // Запрашиваем все категории (без type_id)
+    fetch('{% url "manage_cash:get_categories_by_type" %}')
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('id_subcategory_category');
+            select.innerHTML = '<option value="">---------</option>';
+            data.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.id;
+                opt.textContent = item.name;
+                select.appendChild(opt);
+            });
+        });
+});
             // --- Обработчик изменения типа ---
             document.getElementById('id_type').addEventListener('change', function () {
                 const typeId = this.value;

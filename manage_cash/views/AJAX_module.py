@@ -13,12 +13,12 @@ def get_types_ajax(request):
     return JsonResponse(list(types), safe=False)
 
 def get_categories_by_type(request):
-    """AJAX: получить категории для выбранного типа"""
     type_id = request.GET.get('type_id')
     if type_id:
         categories = Category.objects.filter(transaction_type_id=type_id).values('id', 'name')
-        return JsonResponse(list(categories), safe=False)
-    return JsonResponse([], safe=False)
+    else:
+        categories = Category.objects.all().values('id', 'name')  # ← все категории
+    return JsonResponse(list(categories), safe=False)
 
 def get_subcategories_by_category(request):
     """AJAX: получить подкатегории для выбранной категории"""
