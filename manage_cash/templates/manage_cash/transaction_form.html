@@ -119,7 +119,8 @@
     </div>
 
     <!-- Модальное окно для добавления Категории -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -135,7 +136,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="id_category_transaction_type" class="form-label">Тип транзакции</label>
-                            <select class="form-control" id="id_category_transaction_type" name="transaction_type" required>
+                            <select class="form-control" id="id_category_transaction_type" name="transaction_type"
+                                    required>
                                 <!-- Заполняется через JavaScript -->
                             </select>
                         </div>
@@ -150,7 +152,8 @@
     </div>
 
     <!-- Модальное окно для добавления Подкатегории -->
-    <div class="modal fade" id="addSubcategoryModal" tabindex="-1" aria-labelledby="addSubcategoryModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addSubcategoryModal" tabindex="-1" aria-labelledby="addSubcategoryModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -202,63 +205,63 @@
 
             // --- Функция для загрузки категорий ---
             function loadCategoriesByType(typeId, targetSelectId) {
-    if (typeId) {
-        // ❗ Измени путь: было `/manage-cash/ajax/categories/?type_id=${typeId}`, стало `/ajax/categories/?type_id=${typeId}`
-        fetch(`/ajax/categories/?type_id=${typeId}`)
-            .then(response => response.json())
-            .then(data => {
-                const selectElement = document.getElementById(targetSelectId);
-                selectElement.innerHTML = '<option value="">---------</option>';
-                data.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = item.name;
-                    selectElement.appendChild(option);
-                });
-            });
-    } else {
-        const selectElement = document.getElementById(targetSelectId);
-        selectElement.innerHTML = '<option value="">---------</option>';
-    }
-}
+                if (typeId) {
+                    // ❗ Измени путь: было `/manage-cash/ajax/categories/?type_id=${typeId}`, стало `/ajax/categories/?type_id=${typeId}`
+                    fetch(`/ajax/categories/?type_id=${typeId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const selectElement = document.getElementById(targetSelectId);
+                            selectElement.innerHTML = '<option value="">---------</option>';
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.name;
+                                selectElement.appendChild(option);
+                            });
+                        });
+                } else {
+                    const selectElement = document.getElementById(targetSelectId);
+                    selectElement.innerHTML = '<option value="">---------</option>';
+                }
+            }
 
 // --- Функция для загрузки подкатегорий по категории ---
-function loadSubcategoriesByCategory(categoryId, targetSelectId) {
-    if (categoryId) {
-        // ❗ Измени путь: было `/manage-cash/ajax/subcategories/?category_id=${categoryId}`, стало `/ajax/subcategories/?category_id=${categoryId}`
-        fetch(`/ajax/subcategories/?category_id=${categoryId}`)
-            .then(response => response.json())
-            .then(data => {
-                const selectElement = document.getElementById(targetSelectId);
-                selectElement.innerHTML = '<option value="">---------</option>';
-                data.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = item.name;
-                    selectElement.appendChild(option);
-                });
-            });
-    } else {
-        const selectElement = document.getElementById(targetSelectId);
-        selectElement.innerHTML = '<option value="">---------</option>';
-    }
-}
+            function loadSubcategoriesByCategory(categoryId, targetSelectId) {
+                if (categoryId) {
+                    // ❗ Измени путь: было `/manage-cash/ajax/subcategories/?category_id=${categoryId}`, стало `/ajax/subcategories/?category_id=${categoryId}`
+                    fetch(`/ajax/subcategories/?category_id=${categoryId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const selectElement = document.getElementById(targetSelectId);
+                            selectElement.innerHTML = '<option value="">---------</option>';
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.name;
+                                selectElement.appendChild(option);
+                            });
+                        });
+                } else {
+                    const selectElement = document.getElementById(targetSelectId);
+                    selectElement.innerHTML = '<option value="">---------</option>';
+                }
+            }
 
-        document.getElementById('addSubcategoryModal').addEventListener('show.bs.modal', function () {
-    // Запрашиваем все категории (без type_id)
-    fetch('{% url "manage_cash:get_categories_by_type" %}')
-        .then(response => response.json())
-        .then(data => {
-            const select = document.getElementById('id_subcategory_category');
-            select.innerHTML = '<option value="">---------</option>';
-            data.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.id;
-                opt.textContent = item.name;
-                select.appendChild(opt);
+            document.getElementById('addSubcategoryModal').addEventListener('show.bs.modal', function () {
+                // Запрашиваем все категории (без type_id)
+                fetch('{% url "manage_cash:get_categories_by_type" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        const select = document.getElementById('id_subcategory_category');
+                        select.innerHTML = '<option value="">---------</option>';
+                        data.forEach(item => {
+                            const opt = document.createElement('option');
+                            opt.value = item.id;
+                            opt.textContent = item.name;
+                            select.appendChild(opt);
+                        });
+                    });
             });
-        });
-});
             // --- Обработчик изменения типа ---
             document.getElementById('id_type').addEventListener('change', function () {
                 const typeId = this.value;
@@ -266,7 +269,7 @@ function loadSubcategoriesByCategory(categoryId, targetSelectId) {
                 // Очищаем подкатегорию, если тип изменился
                 document.getElementById('id_subcategory').innerHTML = '<option value="">---------</option>';
             });
-            
+
             // --- Обработчик изменения категории ---
             document.getElementById('id_category').addEventListener('change', function () {
                 const categoryId = this.value;
@@ -293,51 +296,51 @@ function loadSubcategoriesByCategory(categoryId, targetSelectId) {
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
                     }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Добавляем новый элемент в целевой select
-                        const targetSelect = document.getElementById(targetSelectId);
-                        const newOption = document.createElement('option');
-                        newOption.value = data.item.id;
-                        newOption.textContent = data.item.name;
-                        newOption.selected = true; // Выбираем его
-                        targetSelect.appendChild(newOption);
-            
-                        // Закрываем модальное окно
-                        const modalElement = document.querySelector(`#${formId.replace('Form', 'Modal')}`);
-                        const modal = bootstrap.Modal.getInstance(modalElement);
-                        if (modal) {
-                            modal.hide();
-                        }
-            
-                        // Очищаем форму
-                        document.getElementById(formId).reset();
-                    } else {
-                        // ❗ Правильно обрабатываем JSON-ошибки
-                        let errorMessage = 'Неизвестная ошибка';
-                        try {
-                            // data.error — это строка, содержащая JSON
-                            const errorJson = JSON.parse(data.error);
-                            
-                            // Извлекаем сообщения
-                            if (errorJson.name) {
-                                errorMessage = errorJson.name.map(err => err.message).join(', ');
-                            } else {
-                                // Если поле name нет, выводим всё как есть
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Добавляем новый элемент в целевой select
+                            const targetSelect = document.getElementById(targetSelectId);
+                            const newOption = document.createElement('option');
+                            newOption.value = data.item.id;
+                            newOption.textContent = data.item.name;
+                            newOption.selected = true; // Выбираем его
+                            targetSelect.appendChild(newOption);
+
+                            // Закрываем модальное окно
+                            const modalElement = document.querySelector(`#${formId.replace('Form', 'Modal')}`);
+                            const modal = bootstrap.Modal.getInstance(modalElement);
+                            if (modal) {
+                                modal.hide();
+                            }
+
+                            // Очищаем форму
+                            document.getElementById(formId).reset();
+                        } else {
+                            // ❗ Правильно обрабатываем JSON-ошибки
+                            let errorMessage = 'Неизвестная ошибка';
+                            try {
+                                // data.error — это строка, содержащая JSON
+                                const errorJson = JSON.parse(data.error);
+
+                                // Извлекаем сообщения
+                                if (errorJson.name) {
+                                    errorMessage = errorJson.name.map(err => err.message).join(', ');
+                                } else {
+                                    // Если поле name нет, выводим всё как есть
+                                    errorMessage = data.error;
+                                }
+                            } catch (e) {
+                                // Если не удалось распарсить, выводим как есть
                                 errorMessage = data.error;
                             }
-                        } catch (e) {
-                            // Если не удалось распарсить, выводим как есть
-                            errorMessage = data.error;
+                            alert('Ошибка: ' + errorMessage);
                         }
-                        alert('Ошибка: ' + errorMessage);
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка при сохранении:', error);
-                    alert('Произошла ошибка при сохранении.');
-                });
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при сохранении:', error);
+                        alert('Произошла ошибка при сохранении.');
+                    });
             }
 
             // --- Обработчики для кнопок сохранения ---

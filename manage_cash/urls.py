@@ -6,9 +6,12 @@ from .views import (TransactionListView,
                     CreateTypeView,
                     CreateCategoryView,
                     CreateSubcategoryView, get_types_ajax, add_status_ajax, add_type_ajax,
-                    add_category_ajax, add_subcategory_ajax, get_categories_by_type, get_subcategories_by_category, )
+                    add_category_ajax, add_subcategory_ajax, get_categories_by_type, get_subcategories_by_category,
+                    CategoryListView,
+                    CategoryDeleteView)
 
 from .views.head_directory import CreateAllDirectoryView
+from .views.list_subcategory import SubcategoryListView, SubcategoryDeleteView
 
 app_name = ManageCashConfig.name
 
@@ -23,6 +26,11 @@ urlpatterns = [
     path("add_type/", CreateTypeView.as_view(), name="add_type"),
     path("add_category/", CreateCategoryView.as_view(), name="add_category"),
     path("add_subcategory/", CreateSubcategoryView.as_view(), name="add_subcategory"),
+    # Работа со справочниками - просмотр списка и удаление
+    path("list_category/", CategoryListView.as_view(), name="list_category"),
+    path('category/delete/<int:pk>/', CategoryDeleteView.as_view(), name='category_confirm_delete'),
+    path("list_subcategory/", SubcategoryListView.as_view(), name="list_subcategory"),
+    path('subcategory/delete/<int:pk>/', SubcategoryDeleteView.as_view(), name='subcategory_confirm_delete'),
     # AJAX-эндпоинты для модальных окон  #########################################################
     path("ajax/types/", get_types_ajax, name="get_types_ajax"),
     path("ajax/categories/", get_categories_by_type, name="get_categories_by_type"),

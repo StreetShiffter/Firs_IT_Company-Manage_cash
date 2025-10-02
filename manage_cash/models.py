@@ -38,6 +38,13 @@ class Category(models.Model):
     def __str__(self):
         return f'{self.name}, {self.transaction_type}'
 
+    def can_delete(self):
+        """Можно ли безопасно удалить категорию? - проверка в шаблоне на невозможность удаления"""
+        return not (
+                self.subcategories.exists() or
+                self.transactions.exists()
+        )
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
@@ -60,6 +67,7 @@ class Subcategory(models.Model):
     class Meta:
         verbose_name = 'Подкатегория'
         verbose_name_plural = 'Подкатегории'
+        unique_together = ('name', 'category')
 
 
 class Transaction(models.Model):
