@@ -1,0 +1,147 @@
+{% extends "manage_cash/base.html" %}
+{% load static %}
+{% block title %}Управление справочниками{% endblock %}
+
+{% block content %}
+    <div class="container-fluid p-4">
+        <h2>Управление справочниками</h2>
+
+        <div class="row">
+    <!-- Статус -->
+    <div class="col-md-3 mb-4 d-flex">
+        <div class="card w-100">
+            <div class="card-header">
+                <h5>Добавить статус</h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <form method="post" id="addStatusForm" class="flex-grow-1">
+                    {% csrf_token %}
+                    {{ status_form.as_p }}
+                    <button type="button" class="btn btn-primary mt-auto" id="saveStatusBtn">Сохранить</button>
+                </form>
+                 <a href="{% url 'manage_cash:list_status' %}" class="btn btn-indigo btn-sm me-2 mt-3 ">Просмотр списка cтатусов транзакции</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Тип -->
+    <div class="col-md-3 mb-4 d-flex">
+        <div class="card w-100">
+            <div class="card-header">
+                <h5>Добавить тип</h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <form method="post" id="addTypeForm" class="flex-grow-1">
+                    {% csrf_token %}
+                    {{ type_form.as_p }}
+                    <button type="button" class="btn btn-primary mt-auto" id="saveTypeBtn">Сохранить</button>
+                </form>
+                <a href="{% url 'manage_cash:list_type' %}" class="btn btn-indigo btn-sm me-2 mt-3 ">Просмотр списка типов категорий</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Категория -->
+    <div class="col-md-3 mb-4 d-flex">
+        <div class="card w-100">
+            <div class="card-header">
+                <h5>Добавить категорию</h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <form method="post" id="addCategoryForm" class="flex-grow-1">
+                    {% csrf_token %}
+                    {{ category_form.as_p }}
+                    <button type="button" class="btn btn-primary mt-auto" id="saveCategoryBtn">Сохранить</button>
+                </form>
+                <a href="{% url 'manage_cash:list_category' %}" class="btn btn-indigo btn-sm me-2 mt-3 ">Просмотр списка категорий</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подкатегория -->
+    <div class="col-md-3 mb-4 d-flex">
+        <div class="card w-100">
+            <div class="card-header">
+                <h5>Добавить подкатегорию</h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <form method="post" id="addSubcategoryForm" class="flex-grow-1">
+                    {% csrf_token %}
+                    {{ subcategory_form.as_p }}
+                    <button type="button" class="btn btn-primary mt-auto" id="saveSubcategoryBtn">Сохранить</button>
+                </form>
+                <a href="{% url 'manage_cash:list_subcategory' %}" class="btn btn-indigo btn-sm me-2 mt-3 ">Просмотр списка подкатегорий</a>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // --- Функция для добавления справочника ---
+        function addReference(formId, addUrl) {
+            const formData = new FormData(document.getElementById(formId));
+            fetch(addUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Справочник успешно добавлен!');
+                    // Очищаем форму
+                    document.getElementById(formId).reset();
+                } else {
+                    let errorMessage = 'Неизвестная ошибка';
+                        try {
+                            const errorJson = JSON.parse(data.error);
+                        
+                            // 1. Ошибки на уровне всей формы (__all__)
+                            if (errorJson['__all__']) {
+                                errorMessage = errorJson['__all__'].map(err => err.message).join('; ');
+                            }
+                            // 2. Ошибки по конкретным полям (name, transaction_type и т.д.)
+                            else {
+                                const fieldErrors = [];
+                                for (const [field, errors] of Object.entries(errorJson)) {
+                                    fieldErrors.push(...errors.map(err => `${field}: ${err.message}`));
+                                }
+                                errorMessage = fieldErrors.join('; ') || data.error;
+                            }
+                        } catch (e) {
+                            errorMessage = data.error;
+                        }
+                    alert('Ошибка: ' + errorMessage);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при сохранении:', error);
+                alert('Произошла ошибка при сохранении.');
+            });
+        }
+
+        // --- Обработчики для кнопок сохранения ---
+
+        document.getElementById('saveStatusBtn').addEventListener('click', function () {
+            addReference('addStatusForm', '{% url "manage_cash:add_status_ajax" %}');
+        });
+
+        document.getElementById('saveTypeBtn').addEventListener('click', function () {
+            addReference('addTypeForm', '{% url "manage_cash:add_type_ajax" %}');
+        });
+
+        document.getElementById('saveCategoryBtn').addEventListener('click', function () {
+            addReference('addCategoryForm', '{% url "manage_cash:add_category_ajax" %}');
+        });
+
+        document.getElementById('saveSubcategoryBtn').addEventListener('click', function () {
+            addReference('addSubcategoryForm', '{% url "manage_cash:add_subcategory_ajax" %}');
+        });
+    </script>
+{% endblock %}

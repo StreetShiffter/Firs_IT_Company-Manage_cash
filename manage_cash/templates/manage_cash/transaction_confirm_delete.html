@@ -1,0 +1,16 @@
+{% extends "manage_cash/base.html" %}
+{% load static %}
+{% block title %}Подтверждение удаления{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Удалить запись транзакции?</h2>
+    <p>Вы действительно хотите удалить текущую транзакцию<strong>{{ object.name }}</strong>? Действие будет безвозвратным!</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <a href="{% url 'manage_cash:list_category' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

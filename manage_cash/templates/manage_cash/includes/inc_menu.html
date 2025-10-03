@@ -1,0 +1,83 @@
+{% load static %}
+
+<nav class="navbar navbar-dark flex-column align-items-stretch p-3" style="width: 250px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1040; background-color: #212539;color: #ccc;">
+    <a class="navbar-brand d-flex align-items-center mb-4" href="{% url 'manage_cash:home' %}">
+        <img src="{% static 'manage_cash/images/logo.png' %}" alt="Логотип" height="40" class="me-2">
+        <span class="text-white">ДДС</span>
+    </a>
+
+    <ul class="nav flex-column w-100">
+        {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link nav-link-lemon" href="{% url 'manage_cash:home' %}">
+                    <i class="fas fa-home me-2"></i>Главная
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-link-lemon" href="{% url 'manage_cash:create_transaction' %}">
+                    <i class="fas fa-plus-circle me-2"></i>Создать запись
+                </a>
+            </li>
+            {% endif %}
+            {% if user.is_authenticated and request.user.is_superuser %}
+            <li class="nav-item">
+                <a class="nav-link nav-link-lemon" href="{% url 'manage_cash:create_directory' %}">
+                    <i class="fas fa-book me-2"></i>Справочники
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-link-lemon" href="{% url 'manage_cash:list_category' %}">
+                    <i class="fas fa-list me-2"></i>Категории
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-link-lemon" href="{% url 'manage_cash:list_subcategory' %}">
+                    <i class="fas fa-list-ol me-2"></i>Подкатегории
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+
+    {% if user.is_authenticated %}
+        <div class="mt-auto pt-3 border-top border-secondary">
+            <div class="dropup">
+                <button class="btn btn-outline-light btn-sm w-100 text-start" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-user-circle me-2"></i> {{ user.username }}
+                </button>
+                <ul class="dropdown-menu w-100">
+                    <li><a class="dropdown-item" href="{% url 'users:profile' %}"><i class="fas fa-user me-2"></i> Профиль</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="post" action="{% url 'users:logout' %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i> Выйти
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        {% else %}
+        <div class="mt-auto pt-3 border-top border-secondary">
+            <div class="dropup">
+                <button class="btn btn-outline-light btn-sm w-100 text-start" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-user-circle me-2"></i> Профиль
+                </button>
+                <ul class="dropdown-menu w-100">
+                    <li><a class="dropdown-item" href="{% url 'users:register' %}"><i class="fas fa-user me-2"></i> Регистрация</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="post" action="{% url 'users:login' %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i> Вход
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+</nav>
