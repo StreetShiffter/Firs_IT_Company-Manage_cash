@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 
 from django.core.mail import send_mail
+from django.db.models import Sum
 from django.shortcuts import redirect, render, get_object_or_404
 
 from django.views.generic import CreateView, UpdateView
@@ -16,7 +17,13 @@ from config.settings import EMAIL_HOST_USER
 from django.views import View
 from django.urls import reverse_lazy
 
-from manage_cash.models import Transaction
+from manage_cash.models import (
+    Transaction,
+    StatusTransaction,
+    TypeTransaction,
+    Category,
+    Subcategory,
+)
 from .forms import CustomUserCreationForm, UserProfileForm
 from .models import User
 
@@ -80,25 +87,40 @@ class CustomLoginView(LoginView):
 
 
 class UserProfileView(View):
-    """Вьюшка кабинета пользователя"""
-
     def get(self, request):
-        user = self.request.user
+        user = request.user
         queryset = Transaction.objects.filter(owner=user)
 
-        # status_id = self.request.GET.get('status')
-        # status = queryset.filter(status_id=status_id)
-        # type_id = self.request.GET.get('type')
-        # type = queryset.filter(status_id=type_id)
-        # category_id = self.request.GET.get('category')
-        # category = queryset.filter(status_id=category_id)
-        # subcategory_id = self.request.GET.get('subcategory')
-        # subcategory = queryset.filter(status_id=subcategory_id)
+        status_id = request.GET.get("status")
+        type_id = request.GET.get("type")
+        category_id = request.GET.get("category")
+        subcategory_id = request.GET.get("subcategory")
 
+        total_sum = (
+            Transaction.objects.filter(owner=request.user).aggregate(
+                total=Sum("amount")
+            )["total"]
+            or 0
+        )
+
+        if status_id:
+            queryset = queryset.filter(status_id=status_id)
+        if type_id:
+            queryset = queryset.filter(type_id=type_id)
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+        if subcategory_id:
+            queryset = queryset.filter(subcategory_id=subcategory_id)
 
         context = {
             "user_profile": user,
             "total_attempts": queryset.count(),
+            "transactions": queryset,
+            "total_sum": total_sum,
+            "statuses": StatusTransaction.objects.all(),
+            "types": TypeTransaction.objects.all(),
+            "categories": Category.objects.all(),
+            "subcategories": Subcategory.objects.all(),
         }
         return render(request, "users/profile.html", context)
 
@@ -113,4 +135,3 @@ class UserProfileEditView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user  # редактируем только текущего пользователя
-

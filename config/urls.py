@@ -5,9 +5,9 @@ from django.urls import path, include
 from config import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('manage_cash.urls')),
-    path('users/', include('users.urls', namespace='users'))
+    path("admin/", admin.site.urls),
+    path("", include("manage_cash.urls")),
+    path("users/", include("users.urls", namespace="users")),
 ]
 
 if settings.DEBUG:

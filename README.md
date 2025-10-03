@@ -31,15 +31,11 @@ cd firs-it-company-manage-cash
 
 ```poetry install```
 
-
  Установите инструменты для реализации сервиса:
 
 ![Python](https://img.shields.io/badge/Python-3.13-green?logo=python&logoColor=white)
 
 [![Django](https://img.shields.io/badge/Django-3.2.0-%2311677A?logo=django&logoColor=white&style=flat&labelColor=black)]( https://www.djangoproject.com/ )
-![Django REST Framework](https://img.shields.io/badge/DJANGO-REST_FRAMEWORK-ff69b4?style=for-the-badge&logo=django&logoColor=white)
-[![django-filter](https://img.shields.io/badge/django--filter-4.0.0-blue?logo=django&logoColor=white&style=for-the-badge)](https://django-filter.readthedocs.io/)
-![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 [![python-dotenv](https://img.shields.io/badge/python--dotenv-black?logo=envoy&logoColor=orange)]( https://pypi.org/project/python-dotenv/ )
 [![psycopg2](https://img.shields.io/badge/psycopg2-%233178C6?logo=postgresql&logoColor=white)]( https://pypi.org/project/psycopg2/ )
 [![Pillow](https://img.shields.io/badge/Pillow-%23FF6B6B?logo=python&logoColor=white&style=flat&labelColor=black)]( https://pypi.org/project/Pillow/ )
@@ -57,8 +53,6 @@ cd firs-it-company-manage-cash
 КОМАНДЫ ДЛЯ ЗАПУСКА ФРЕЙМВОРКА И ПРИЛОЖЕНИЯ
 ```
 poetry add django # Установка django
-poetry add djangorestframework # Установка django rest framework
-poetry add django-filter # Установка фильтратора DRF
 poetry add pillow # Установка библиотеки для работы с изображениями
 poetry add dotenv # Установка библиотеки для работы с чувствительными данными
 poetry add ipython # Установка библиотеки для работы с чувствительными данными
@@ -79,58 +73,61 @@ python manage.py shell -i ipython #Запуск DJANGO SHELL
 🔄 ОБНОВЛЕНИЕ ДАННЫХ
 
 ВНИМАНИЕ!!!
-При создании фикстур для моделей использующие AbstractUser или AbstractBaseUser - фикстура создается
-с нужными полями так же как из БД КРОМЕ ПОЛЕЙ:
+В проекте есть файл *.env_example* и скопировать все поля в новый файл *.env*
+Необходимо сгенерировать новый ключ SECRET_KEY через командную строку и вставить ключ в нужное поле
 
--которые имеют null-true - не обязательно заполнять
--id-pk - не надо
--last_login - категорически нельзя
+```
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+💽 РАБОТА С БД
+Необходимо создать новую БД через СУБД *PostgreSQL* и внести новые данные в .env
+До работы с приложением примените миграции в вашу БД:
 
-При записи через фикстуру обычных моделей — указываем все поля, кроме pk/id,
-и тех, которые необязательны (null=True, blank=True)
+```
+python manage.py migrate
+```
 
-Команда записи фикстуры:
+☁️ Работа с почтой
+Необходимо создать приложение почты в вашем Gmail или ЯндексПочта почтовом ящике и внести данные в .env
 
-python manage.py loaddata НАЗВАНИЕ_ФИКСТУРЫ.json --ignorenonexistent(игнорирование несуществующих связей)
+![Настройки почты ](./media/images/SMPT_HOST.jpg)
 
+🛠️ Работа с приложением:
+1. Для работы с вьюшками в основном приложении найдите папку *views.py*? создайте модуль и реализуйте контроллер.
+2. Импортируйте новый контроллер в модуле *__init__.py* и импортируйте контроллер
+3. Пропишите путь контроллера в модуле *urls.py*
+4. При необходимости привяжите к контроллеру шаблон HTML и положите в папку по пути *templates/manage_cash*
+Образец шаблона:
+```
+{% extends "manage_cash/base.html" %}
+{% load static %}
+{% block title %}ИМЯ ВКЛАДКИ{% endblock %}
 
+{% block content %}
+
+ОСНОВНОЙ БЛОК С КОНТЕНТОМ
+           +
+<!-- Модальное окно для добавления Подкатегории -->
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+ФУНКЦИОНАЛ JS
+    </script>
+{% endblock %}
+
+```
+5. При работе с приложением *Users* повторяйте пункты 1-4
+❗ в приложении пользователей все контроллеры лежат в модуле *views.py*
 # ✒️ Использование API
-*Get запросы на список*
-![Get запросы на список](./media/get.jpg)
-
-*Get запросы на конкретный объект*
-![Get запросы на конкретный объект](./media/get_pk.jpg)
-
-Для POSTMAN можно выполнять фильтрацию и поиск, если они указаны в полях вьюшки-ендпоинте:
+ВНИМАНИЕ - НА ДАННЫЙ МОМЕНТ НЕ РЕАЛИЗОВАН DJANGO RAST FRAMEWORK
+Для POSTMAN можно выполнять фильтрацию и поиск, если они указаны в полях вьюшки-эндпоинте:
 ```
 http://localhost:8000/users/payment/ - основа
 http://localhost:8000/users/payment/?ordering=payment_date=false - сортировка по убыванию(указываем функцию и по какому полю из вьюшки)
 http://localhost:8000/users/payment/?payment_method=transfer - фильтрация (можно не указывать поле filterset) 
 ```
-![Get запросы на конкретный объект](./media/endpoint_filter_ordering.jpg)
-
-ПРОВЕРКА В DJANGO_SHELL на названия нужных прав:
-```
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-
-# Найди контент-тип для модели Course
-course_ct = ContentType.objects.get(app_label='educations', model='course')
-lesson_ct = ContentType.objects.get(app_label='educations', model='lesson')
-
-# Посмотри разрешения
-perms = Permission.objects.filter(
-    content_type__in=[course_ct, lesson_ct],
-    codename__in=[
-        'add_course', 'change_course',
-        'add_lesson', 'change_lesson'
-    ]
-)
-
-for p in perms:
-    print(p.codename, p.id)
-```
-
 
 ```
 ️ ВАЖНО ⚠️
@@ -138,13 +135,6 @@ for p in perms:
 python manage.py runserver 8080 # Запуск сервера
 CTRL+С # Отключение сервера
 ```
-### 🌐 Пример страниц:
-*Главная страница*
-![Главная страница](./static/mailservices/images/home.jpg)
-
-
-📡 API Документация
-API доступно по адресу: http://localhost:8000/api/
 
 Postman коллекция
 Для удобства тестирования API предоставлена коллекция Postman:
@@ -156,37 +146,63 @@ Postman коллекция
 🔗 Открыть в Postman
 
 💡 Совет: Импортируйте коллекцию в Postman → "Import" → "Link" или "File". 
-### 📶 Работа с запросами
-```
-http://localhost:8000/users/payment/ - основа
-http://localhost:8000/users/payment/?ordering=payment_date=false - сортировка по убыванию(указываем функцию и по какому полю из вьюшки)
-http://localhost:8000/users/payment/?payment_method=transfer - фильтрация (можно не указывать поле filterset) 
+### 🌐 Пример страниц:
+*Главная страница*
+![Главная страница](./static/mailservices/images/home.jpg)
 
-Регистрация:
-http://localhost:8000/users/register/ - post(json-raw)
+#### 🔍СТРУКТУРА ПРОЕКТА
+📁 Firs_IT_Company-Manage_cash/
+├── 📁 config/                     # Настройки Django
+│   ├── 📁 manage_cash/            # Основное приложение
+│   │   ├── 📁 migrations/         # Миграции БД
+│   │   ├── 📁 templates/          # Шаблоны HTML
+│   │   ├── 📁 views/              # Модули работы со справочниками, главной страницей и AJAX-модули
+│   │   │   ├── 📄 AJAX_module.py
+│   │   │   ├── 📄 create_directory.py
+│   │   │   ├── 📄 head_directory.py
+│   │   │   ├── 📄 list_category.py
+│   │   │   ├── 📄 list_status.py
+│   │   │   ├── 📄 list_subcategory.py
+│   │   │   └── 📄 list_type.py
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 admin.py
+│   │   ├── 📄 apps.py
+│   │   ├── 📄 forms.py
+│   │   ├── 📄 models.py
+│   │   ├── 📄 tests.py
+│   │   └── 📄 urls.py
+│   └── 📄 __init__.py
+│
+├── 📁 users/                      # Приложение пользователей
+│   ├── 📁 migrations/
+│   ├── 📁 templates/
+│   ├── 📄 __init__.py
+│   ├── 📄 admin.py
+│   ├── 📄 apps.py
+│   ├── 📄 forms.py
+│   ├── 📄 models.py
+│   ├── 📄 tests.py
+│   ├── 📄 urls.py
+│   ├── 📄 validators.py
+│   └── 📄 views.py
+│
+├── 📁 media/                      # Загрузка файлов
+│   └── 📁 user_avatars/           # Аватары пользователей
+│
+├── 📁 static/                     # Статика
+│   ├── 📁 css/
+│   ├── 📁 js/
+│   └── 📁 manage_cash/
+│
+├── 📄 .env                       # Переменные окружения (не коммитится!)
+├── 📄 .env_example               # Шаблон .env
+├── 📄 .gitignore                 # Что игнорировать в Git
+├── 📄 .flake8                    # Настройки линтера
+├── 📄 Icon.md                    # Иконка проекта (если есть)
+├── 📄 manage.py                  # Менеджер Django
+├── 📄 poetry.lock                # Зависимости Poetry
+├── 📄 pyproject.toml             # Конфигурация Poetry
+└── 📄 README.md                  # Этот файл 
 
-Вход и получение токена post:
-http://localhost:8000/users/login/ в body отправить json (json-raw)
-
-Просмотр профиля get:
-http://localhost:8000/users/profile/ (headers) Accept -Bearer  токен 
-
-Редактирование профиля patch:
-http://localhost:8000/users/profile/ (json-raw) patch + (headers) Accept -Bearer токен
-
-Редактирование профиля полностью( нужны важные поля входа в аккаунт) put:
-http://localhost:8000/users/profile/ (json-raw) patch + (headers) Accept - Bearer токен 
-
-Удаление профиля delete:
-http://localhost:8000/users/profile/delete (headers) Bearer  токен 
-
-Просмотр списков пользователя get:
-http://localhost:8000/users/list/(headers) Accept - Bearer  токен 
-
-Отправка refresh токена post:
-http://localhost:8000/users/list/(headers) Content-Type - application/json/ 
-в body отправить json
-{"refresh":"токен"} 
-```
 📄 Лицензия
 Этот проект лицензирован по MIT License — подробнее см. файл LICENSE.

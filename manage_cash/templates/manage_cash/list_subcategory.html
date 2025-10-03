@@ -1,6 +1,6 @@
 {% extends "manage_cash/base.html" %}
-
-{% block title %}Все категории{% endblock %}
+{% load static %}
+{% block title %}Все подкатегории{% endblock %}
 
 {% block content %}
     <h2>Податегории пользователя {{ request.user.username }}</h2>
@@ -26,21 +26,19 @@
                         </td>
                         <td>
                             <!-- Редактирование -->
-                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                    data-bs-target="#editCategoryModal-{{ subcategory.pk }}">
-                                Изменить
-                            </button>
-
+                            <a href="{% url 'manage_cash:subcategory_edit' subcategory.pk %}" class="btn btn-sm btn-warning">
+                            Переименовать
+                            </a>
                             <!-- Удаление -->
-                            {% if subcategory.can_delete and request.user.is_superuser%}
-                                <a href="{% url 'manage_cash:subcategory_confirm_delete' category.pk %}"
+                            {% if subcategory.can_delete and request.user.is_superuser %}
+                                <a href="{% url 'manage_cash:subcategory_confirm_delete' subcategory.pk %}"
                                    class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Вы уверены, что хотите удалить категорию?')">
+                                   onclick="return confirm('Вы уверены, что хотите удалить подкатегорию?')">
                                     Удалить
                                 </a>
                             {% else %}
                                 <span class="btn btn-sm btn-outline-secondary disabled"
-                                      title="Нельзя удалить: есть подкатегории или транзакции">
+                                      title="Нельзя удалить: есть связанные транзакции">
                                     Удалить
                                 </span>
                             {% endif %}

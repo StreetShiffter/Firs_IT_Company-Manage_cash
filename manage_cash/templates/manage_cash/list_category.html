@@ -1,5 +1,5 @@
 {% extends "manage_cash/base.html" %}
-
+{% load static %}
 {% block title %}Все категории{% endblock %}
 
 {% block content %}
@@ -19,17 +19,16 @@
                     <tr>
                         <td>{{ category.name }}</td>
                         <td>
-                            <a href="#"
+                            <a href="{% url 'manage_cash:list_type' %}?id={{ category.transaction_type.id }}"
                                class="text-decoration-none">
                                 {{ category.transaction_type.name }}
                             </a>
                         </td>
                         <td>
                             <!-- Редактирование -->
-                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                    data-bs-target="#editCategoryModal-{{ category.pk }}">
-                                Изменить
-                            </button>
+                            <a href="{% url 'manage_cash:category_edit' category.pk %}" class="btn btn-sm btn-warning">
+                            Переименовать
+                            </a>
 
                             <!-- Удаление -->
                             {% if category.can_delete and request.user.is_superuser%}
