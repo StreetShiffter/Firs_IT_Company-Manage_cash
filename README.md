@@ -154,6 +154,7 @@ Postman коллекция
 ![Создание справочников](./media/images/add_list.jpg)
 
 #### 🔍СТРУКТУРА ПРОЕКТА
+```
 📁 Firs_IT_Company-Manage_cash/
 ├── 📁 config/                     # Настройки Django
 │   ├── 📁 manage_cash/            # Основное приложение
@@ -206,6 +207,6 @@ Postman коллекция
 ├── 📄 poetry.lock                # Зависимости Poetry
 ├── 📄 pyproject.toml             # Конфигурация Poetry
 └── 📄 README.md                  # Этот файл 
-
+```
 📄 Лицензия
 Этот проект лицензирован по MIT License — подробнее см. файл LICENSE.
